@@ -1,0 +1,8 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "libraryName": "project-pulse",
+    "framework": "react",
+    "version": "1.0.0",
+    "libraryId": "4d0812b9-1362-49f7-b280-d18f2c516a24"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "entry": "./lib/webparts/projectPulse/ProjectPulseWebPart.js",
+      "manifest": "./src/webparts/projectPulse/ProjectPulseWebPart.manifest.json",
+      "outputPath": "./dist/project-pulse.bundle.js"
+    }
+  ],
+  "externals": {},
+  "localizedResources": {
+    "projectPulseStrings": "webparts/projectPulse/loc/{locale}.js"
+  }
+}
