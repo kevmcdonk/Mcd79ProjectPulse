@@ -7,7 +7,6 @@ npm-debug.log*
 node_modules
 
 # Build generated files
-dist
 lib
 solution
 temp
@@ -31,4 +30,4 @@ obj
 # Styles Generated Code
 *.scss.ts
 
-ProjectPulseSP/*
+ProjectPulseSP
