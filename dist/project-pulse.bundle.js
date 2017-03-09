@@ -1,4 +1,4 @@
-define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","projectPulseStrings","@microsoft/sp-lodash-subset"], function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_12__) { return /******/ (function(modules) { // webpackBootstrap
+define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","projectPulseStrings","@microsoft/sp-http"], function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_12__) { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -63,7 +63,9 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	    }
 	    ProjectPulseWebPart.prototype.render = function () {
 	        var element = React.createElement(ProjectPulse_1.default, {
-	            description: this.properties.description
+	            spHttpClient: this.context.spHttpClient,
+	            siteUrl: this.context.pageContext.web.absoluteUrl,
+	            listName: "Pulses"
 	        });
 	        ReactDom.render(element, this.domElement);
 	    };
@@ -144,27 +146,93 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	};
 	var React = __webpack_require__(1);
 	var ProjectPulse_module_scss_1 = __webpack_require__(7);
-	var sp_lodash_subset_1 = __webpack_require__(12);
+	var sp_http_1 = __webpack_require__(12);
 	var ProjectPulse = (function (_super) {
 	    __extends(ProjectPulse, _super);
 	    function ProjectPulse() {
-	        return _super !== null && _super.apply(this, arguments) || this;
+	        var _this = _super !== null && _super.apply(this, arguments) || this;
+	        _this.listItemEntityTypeName = undefined;
+	        return _this;
 	    }
+	    ProjectPulse.prototype.blabla = function (element) {
+	        alert('test');
+	    };
 	    ProjectPulse.prototype.render = function () {
+	        var _this = this;
 	        return (React.createElement("div", { className: ProjectPulse_module_scss_1.default.helloWorld },
 	            React.createElement("div", { className: ProjectPulse_module_scss_1.default.container },
 	                React.createElement("div", { className: "ms-Grid-row ms-bgColor-themeDark ms-fontColor-white " + ProjectPulse_module_scss_1.default.row },
-	                    React.createElement("div", { className: "ms-Grid-col ms-u-lg10 ms-u-xl8 ms-u-xlPush2 ms-u-lgPush1" },
-	                        React.createElement("span", { className: "ms-font-xl ms-fontColor-white" }, "Welcome to SharePoint!"),
-	                        React.createElement("p", { className: "ms-font-l ms-fontColor-white" }, "Customize SharePoint experiences using Web Parts."),
-	                        React.createElement("p", { className: "ms-font-l ms-fontColor-white" }, sp_lodash_subset_1.escape(this.props.description)),
-	                        React.createElement("a", { href: "https://aka.ms/spfx", className: ProjectPulse_module_scss_1.default.button },
-	                            React.createElement("span", { className: ProjectPulse_module_scss_1.default.label }, "Learn more"))),
-	                    React.createElement("div", null,
-	                        React.createElement("div", null, "How you feeling?"),
-	                        React.createElement("span", { className: "feelingBlock" }, "Happy"),
-	                        React.createElement("span", { className: "feelingBlock" }, "Meh"),
-	                        React.createElement("span", { className: "feelingBlock" }, "Sad"))))));
+	                    React.createElement("div", { className: "ms-Grid-col ms-u-lg12" },
+	                        React.createElement("span", { className: "ms-font-xl ms-fontColor-white" }, "How do you feel today?")),
+	                    React.createElement("div", { className: "ms-Grid-row ms-bgColor-themeDark ms-fontColor-white" },
+	                        React.createElement("div", { onClick: function () { return _this.createItem('Happy'); }, role: "button", className: "ms-Grid-col ms-u-lg4 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
+	                            React.createElement("i", { className: "ms-Icon ms-Icon--Emoji2 " })),
+	                        React.createElement("div", { onClick: this.blabla, role: "button", className: "ms-Grid-col ms-u-lg4 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
+	                            React.createElement("i", { className: "ms-Icon ms-Icon--EmojiNeutral" })),
+	                        React.createElement("div", { onClick: this.blabla, role: "button", className: "ms-Grid-col ms-u-lg4 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
+	                            React.createElement("i", { className: "ms-Icon ms-Icon--Sad" })))))));
+	    };
+	    ProjectPulse.prototype.createItem = function (feeling) {
+	        var _this = this;
+	        this.setState({
+	            status: 'Creating item...',
+	            items: []
+	        });
+	        this.getListItemEntityTypeName()
+	            .then(function (listItemEntityTypeName) {
+	            var body = JSON.stringify({
+	                '__metadata': {
+	                    'type': listItemEntityTypeName
+	                },
+	                'Title': 'feeling'
+	            });
+	            return _this.props.spHttpClient.post(_this.props.siteUrl + "/_api/web/lists/getbytitle('" + _this.props.listName + "')/items", sp_http_1.SPHttpClient.configurations.v1, {
+	                headers: {
+	                    'Accept': 'application/json;odata=nometadata',
+	                    'Content-type': 'application/json;odata=verbose',
+	                    'odata-version': ''
+	                },
+	                body: body
+	            });
+	        })
+	            .then(function (response) {
+	            return response.json();
+	        })
+	            .then(function (item) {
+	            _this.setState({
+	                status: "Item '" + item.Title + "' (ID: " + item.Id + ") successfully created",
+	                items: []
+	            });
+	        }, function (error) {
+	            _this.setState({
+	                status: 'Error while creating the item: ' + error,
+	                items: []
+	            });
+	        });
+	    };
+	    ProjectPulse.prototype.getListItemEntityTypeName = function () {
+	        var _this = this;
+	        return new Promise(function (resolve, reject) {
+	            if (_this.listItemEntityTypeName) {
+	                resolve(_this.listItemEntityTypeName);
+	                return;
+	            }
+	            _this.props.spHttpClient.get(_this.props.siteUrl + "/_api/web/lists/getbytitle('" + _this.props.listName + "')?$select=ListItemEntityTypeFullName", sp_http_1.SPHttpClient.configurations.v1, {
+	                headers: {
+	                    'Accept': 'application/json;odata=nometadata',
+	                    'odata-version': ''
+	                }
+	            })
+	                .then(function (response) {
+	                return response.json();
+	            }, function (error) {
+	                reject(error);
+	            })
+	                .then(function (response) {
+	                _this.listItemEntityTypeName = response.ListItemEntityTypeFullName;
+	                resolve(_this.listItemEntityTypeName);
+	            });
+	        });
 	    };
 	    return ProjectPulse;
 	}(React.Component));
@@ -181,13 +249,16 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	/* tslint:disable */
 	__webpack_require__(8);
 	var styles = {
-	    helloWorld: 'helloWorld_6a5b67c8',
-	    container: 'container_6a5b67c8',
-	    row: 'row_6a5b67c8',
-	    listItem: 'listItem_6a5b67c8',
-	    feelingBlock: 'feelingBlock_6a5b67c8',
-	    button: 'button_6a5b67c8',
-	    label: 'label_6a5b67c8',
+	    helloWorld: 'helloWorld_a39eda89',
+	    container: 'container_a39eda89',
+	    row: 'row_a39eda89',
+	    listItem: 'listItem_a39eda89',
+	    feelingBlock: 'feelingBlock_a39eda89',
+	    feelingIcon: 'feelingIcon_a39eda89',
+	    pulseBox: 'pulseBox_a39eda89',
+	    pulseBoxContent: 'pulseBoxContent_a39eda89',
+	    button: 'button_a39eda89',
+	    label: 'label_a39eda89',
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = styles;
@@ -218,7 +289,7 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	
 	
 	// module
-	exports.push([module.id, ".helloWorld_6a5b67c8 .container_6a5b67c8{max-width:700px;margin:0 auto;box-shadow:0 2px 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_6a5b67c8 .row_6a5b67c8{padding:20px}.helloWorld_6a5b67c8 .listItem_6a5b67c8{max-width:715px;margin:5px auto 5px auto;box-shadow:0 0 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_6a5b67c8 .feelingBlock_6a5b67c8{padding-right:10px}.helloWorld_6a5b67c8 .button_6a5b67c8{text-decoration:none;height:32px;min-width:80px;background-color:#0078d7;border-color:#0078d7;color:#fff;outline:transparent;position:relative;font-family:\"Segoe UI WestEuropean\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;font-weight:400;border-width:0;text-align:center;cursor:pointer;display:inline-block;padding:0 16px}.helloWorld_6a5b67c8 .button_6a5b67c8 .label_6a5b67c8{font-weight:600;font-size:14px;height:32px;line-height:32px;margin:0 4px;vertical-align:top;display:inline-block}", ""]);
+	exports.push([module.id, ".helloWorld_a39eda89 .container_a39eda89{max-width:700px;margin:0 auto;box-shadow:0 2px 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_a39eda89 .row_a39eda89{padding:20px}.helloWorld_a39eda89 .listItem_a39eda89{max-width:715px;margin:5px auto 5px auto;box-shadow:0 0 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_a39eda89 .feelingBlock_a39eda89{padding-right:10px}.helloWorld_a39eda89 .feelingIcon_a39eda89{padding:20px;text-align:center}.helloWorld_a39eda89 .pulseBox_a39eda89{height:150px}.helloWorld_a39eda89 .pulseBoxContent_a39eda89{font-size:60px;text-align:center;cursor:pointer;vertical-align:middle}.helloWorld_a39eda89 .button_a39eda89{text-decoration:none;height:32px;min-width:80px;background-color:#0078d7;border-color:#0078d7;color:#fff;outline:transparent;position:relative;font-family:\"Segoe UI WestEuropean\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;font-weight:400;border-width:0;text-align:center;cursor:pointer;display:inline-block;padding:0 16px}.helloWorld_a39eda89 .button_a39eda89 .label_a39eda89{font-weight:600;font-size:14px;height:32px;line-height:32px;margin:0 4px;vertical-align:top;display:inline-block}", ""]);
 	
 	// exports
 

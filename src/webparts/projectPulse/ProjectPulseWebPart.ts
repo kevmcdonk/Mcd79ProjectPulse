@@ -18,7 +18,9 @@ export default class ProjectPulseWebPart extends BaseClientSideWebPart<IProjectP
     const element: React.ReactElement<IProjectPulseProps > = React.createElement(
       ProjectPulse,
       {
-        description: this.properties.description
+        spHttpClient: this.context.spHttpClient,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        listName: "Pulses"
       }
     );
 

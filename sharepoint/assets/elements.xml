@@ -22,7 +22,7 @@
       <FieldRef ID="{80fa518c-d04d-4477-8532-017c12106b50}" DisplayName="Pulse Thoughts" Required="FALSE" Name="PulseThoughts" />
     </FieldRefs>
   </ContentType>
-  <ListInstance 
+    <ListInstance 
     CustomSchema="schema.xml"
     FeatureId="00bfea71-de22-43b2-a848-c05709900100"
     Title="Pulses"
@@ -30,6 +30,5 @@
     TemplateType="100"
     Description="Pulses for this site">
 </ListInstance>
-  </Elements>
-  <!--
-    -->
+
+</Elements>

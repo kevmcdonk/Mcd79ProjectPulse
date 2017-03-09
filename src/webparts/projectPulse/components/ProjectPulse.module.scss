@@ -14,9 +14,25 @@
     margin: 5px auto 5px auto;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
-  .feelingBlock{
+  .feelingBlock {
     padding-right:10px;
   }
+
+  .feelingIcon {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .pulseBox {
+    height:150px;
+  }
+.pulseBoxContent {
+  font-size: 60px;
+  text-align: center;
+  cursor:pointer;
+  vertical-align: middle;
+}
+
   .button {
     // Our button
     text-decoration: none;
