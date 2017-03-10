@@ -5,20 +5,41 @@ import { IProjectPulseState } from './IProjectPulseState';
 import { IPulseItem } from './IPulseItem';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
-
+import {
+  Environment,
+  EnvironmentType
+} from '@microsoft/sp-core-library';
+import MockHttpClient from '../MockHttpClient';
 
 export default class ProjectPulse extends React.Component<IProjectPulseProps, IProjectPulseState> {
   private listItemEntityTypeName: string = undefined;
+  private tempStyle: any = undefined;
 
-  private blabla(element?: any): void {
-    alert('test');
+constructor(props: IProjectPulseProps) {
+    super(props);
+
+    this.state = {
+       status: 'getPulse',
+      items: [],
+      showPulses: true,
+      showLoading: false,
+      showTemperature: false,
+      temperature: 0
+    };
+
+//backgroundImage: 'url(' + imgUrl + ')',
+    this.tempStyle = {      
+      background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + this.state.temperature + '%, #db3f02 ' + this.state.temperature + '%, #db3f02 100%)'
+    };
+
   }
-
   public render(): React.ReactElement<IProjectPulseProps> {
-
+    
     return (
       <div className={styles.helloWorld}>
         <div className={styles.container}>
+
+          { this.state.showPulses &&
           <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
             <div className="ms-Grid-col ms-u-lg12">
               <span className="ms-font-xl ms-fontColor-white">How do you feel today?</span>
@@ -27,14 +48,41 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               <div onClick={() => this.createItem('Happy')} role="button" className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
                 <i className="ms-Icon ms-Icon--Emoji2 "></i>
               </div>
-              <div onClick={this.blabla} role="button" className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
+              <div onClick={() => this.createItem('Meh')} role="button" className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
                 <i className="ms-Icon ms-Icon--EmojiNeutral"></i>
               </div>
-              <div onClick={this.blabla} role="button" className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
+              <div onClick={() => this.createItem('Sad')} role="button" className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
                 <i className="ms-Icon ms-Icon--Sad"></i>
               </div>
             </div>
           </div>
+          }
+          { this.state.showLoading &&
+
+            <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
+            <div className="ms-Grid-col ms-u-lg12">
+              <span className="ms-font-xl ms-fontColor-white">Saving...</span>
+            </div>
+            <div className="ms-Grid-row ms-bgColor-themeDark ms-fontColor-white">
+              <div className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
+                <i className="ms-Icon ms-Icon--Sync"></i>
+              </div>
+            </div>
+          </div>
+          }
+          { this.state.showTemperature &&
+
+            <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
+            <div className="ms-Grid-col ms-u-lg12">
+              <span className="ms-font-xl ms-fontColor-white">Everyone else is feeling</span>
+            </div>
+            <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.thermometerContainer}`}>
+              <div className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
+                <span className={styles.thermometer} style={this.tempStyle}>{this.state.temperature}%</span>
+              </div>
+            </div>
+          </div>
+          }
         </div>
       </div>
     );
@@ -43,19 +91,56 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
 
   private createItem(feeling): void {
     this.setState({
-      status: 'Creating item...',
-      items: []
+      status: 'getPulse',
+      items: [],
+      showPulses: false,
+      showLoading: true,
+      showTemperature: false,
+      temperature: 0
     });
 
     this.getListItemEntityTypeName()
       .then((listItemEntityTypeName: string): Promise<SPHttpClientResponse> => {
+        
+        
         const body: string = JSON.stringify({
           '__metadata': {
             'type': listItemEntityTypeName
           },
-          'Title': 'feeling'
+          'Title': feeling
         });
-        return this.props.spHttpClient.post(`${this.props.siteUrl}/_api/web/lists/getbytitle('${this.props.listName}')/items`,
+
+        if (Environment.type === EnvironmentType.Local) {
+          MockHttpClient.getMockListData().then((response) => {
+            //this._renderList(response.value);
+            var score = 0;
+            for (let pulse of response) {
+                if (pulse.Title == 'Happy') {
+                  score += 1;
+                }
+                else if (pulse.Title == 'Meh') {
+                  score += 0.5;
+                }
+            }
+
+            var tempPercentage = Number((100-((score/response.length)*100)).toFixed(2));
+            this.tempStyle = {      
+              background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + tempPercentage + '%, #db3f02 ' + tempPercentage + '%, #db3f02 100%)'
+            };
+            this.setState({
+              status: 'showTemperature',
+              items: [],
+              showPulses: false,
+              showLoading: false,
+              showTemperature: true,
+              temperature: Number(((score/response.length)*100).toFixed(2))
+            });
+          });
+        }
+        else if (Environment.type == EnvironmentType.SharePoint || 
+                  Environment.type == EnvironmentType.ClassicSharePoint) {
+          
+          var response =  this.props.spHttpClient.post(`${this.props.siteUrl}/_api/web/lists/getbytitle('${this.props.listName}')/items`,
           SPHttpClient.configurations.v1,
           {
             headers: {
@@ -65,24 +150,33 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
             },
             body: body
           });
-      })
-      .then((response: SPHttpClientResponse): Promise<IPulseItem> => {
-        return response.json();
-      })
-      .then((item: IPulseItem): void => {
-        this.setState({
-          status: `Item '${item.Title}' (ID: ${item.Id}) successfully created`,
-          items: []
-        });
-      }, (error: any): void => {
-        this.setState({
-          status: 'Error while creating the item: ' + error,
-          items: []
-        });
+          
+          this.setState({
+            status: 'showTemperature',
+            items: [],
+            showPulses: false,
+            showLoading: false,
+            showTemperature: true,
+            temperature: 0
+          });
+
+          return null;
+                  }  
       });
   }
 
   private getListItemEntityTypeName(): Promise<string> {
+    
+    if (Environment.type === EnvironmentType.Local) {
+
+         return new Promise<string>((resolve: (listItemEntityTypeName: string) => void, reject: (error: any) => void): void => {
+          resolve('SP.ListItem');
+            return;
+          
+         });
+        }
+        else if (Environment.type == EnvironmentType.SharePoint || 
+                  Environment.type == EnvironmentType.ClassicSharePoint) {
     return new Promise<string>((resolve: (listItemEntityTypeName: string) => void, reject: (error: any) => void): void => {
       if (this.listItemEntityTypeName) {
         resolve(this.listItemEntityTypeName);
@@ -107,6 +201,7 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
           resolve(this.listItemEntityTypeName);
         });
     });
+                  }
   }
 
 }

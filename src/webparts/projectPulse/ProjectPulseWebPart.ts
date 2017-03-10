@@ -12,6 +12,7 @@ import ProjectPulse from './components/ProjectPulse';
 import { IProjectPulseProps } from './components/IProjectPulseProps';
 import { IProjectPulseWebPartProps } from './IProjectPulseWebPartProps';
 
+
 export default class ProjectPulseWebPart extends BaseClientSideWebPart<IProjectPulseWebPartProps> {
 
   public render(): void {
