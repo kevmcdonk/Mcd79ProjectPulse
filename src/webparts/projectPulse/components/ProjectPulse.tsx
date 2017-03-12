@@ -43,7 +43,10 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
         showPulses: true,
         showLoading: false,
         showTemperature: false,
-        temperature: 0
+        temperature: 0,
+        happyCount: 0,
+        mehCount: 0,
+        sadCount:0
       };
     }
     else {
@@ -54,7 +57,10 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
         showPulses: false,
         showLoading: true,
         showTemperature: false,
-        temperature: 0
+        temperature: 0,
+        happyCount: 0,
+        mehCount: 0,
+        sadCount:0
       };
       this.showTemperature();
     }
@@ -109,8 +115,13 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
                 <span className="ms-font-xl ms-fontColor-white">Everyone else is feeling</span>
               </div>
               <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.thermometerContainer}`}>
-                <div className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
+                <div className={`ms-Grid-col ms-u-lg6 ms-u-sm6 ms-font-su ${styles.feelingIcon}`}>
                   <span className={styles.thermometer} style={this.tempStyle}>{this.state.temperature}%</span>
+                </div>
+                <div className={`ms-Grid-col ms-u-sm6 ms-u-hiddenXlDown ms-font-su ${styles.feelingIcon}`}>
+                  <div><i className="ms-Icon ms-Icon--Emoji2"></i> {this.state.happyCount}</div>
+                  <div><i className="ms-Icon ms-Icon--EmojiNeutral"></i> {this.state.mehCount}</div>
+                  <div><i className="ms-Icon ms-Icon--Sad"></i> {this.state.sadCount}</div>
                 </div>
               </div>
             </div>
@@ -128,16 +139,38 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
       showPulses: false,
       showLoading: true,
       showTemperature: false,
-      temperature: 0
+      temperature: 0,
+        happyCount: 0,
+        mehCount: 0,
+        sadCount:0
     });
 
     this.getListItemEntityTypeName()
       .then((listItemEntityTypeName: string): Promise<SPHttpClientResponse> => {
-        var dateToSet = new Date();
-        localStorage.setItem(this.localStorageKeyLastDate, dateToSet.toString());
-        this.showTemperature();
-        return null;
+        const body: string = JSON.stringify({
+           '__metadata': {
+             'type': listItemEntityTypeName
+           },
+           'PulseFeeling': feeling
+         });
+
+
+         return this.props.spHttpClient.post(`${this.props.siteUrl}/_api/web/lists/getbytitle('${this.props.listName}')/items`,
+           SPHttpClient.configurations.v1,
+           {
+             headers: {
+               'Accept': 'application/json;odata=nometadata',
+               'Content-type': 'application/json;odata=verbose',
+               'odata-version': ''
+             },
+             body: body
+           });
+        
       });
+      var dateToSet = new Date();
+      localStorage.setItem(this.localStorageKeyLastDate, dateToSet.toString());
+      this.showTemperature();
+      return null;
   }
 
   private showTemperature() {
@@ -145,13 +178,21 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
           MockHttpClient.getMockListData().then((response) => {
             //this._renderList(response.value);
             var score = 0;
+            var happyScore = 0;
+            var mehScore = 0;
+            var sadScore = 0;
             
             for (let pulse of response) {
-              if (pulse.Title == 'Happy') {
+              if (pulse.PulseFeeling == 'Happy') {
                 score += 1;
+                happyScore += 1;
               }
-              else if (pulse.Title == 'Meh') {
+              else if (pulse.PulseFeeling == 'Meh') {
                 score += 0.5;
+                mehScore += 1;
+              }
+              else if (pulse.PulseFeeling == 'Sad') {
+                sadScore += 1;
               }
             }
 
@@ -165,7 +206,10 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               showPulses: false,
               showLoading: false,
               showTemperature: true,
-              temperature: Number(((score / response.length) * 100).toFixed(2))
+              temperature: Number(((score / response.length) * 100).toFixed(2)),
+              happyCount: happyScore,
+              mehCount: mehScore,
+              sadCount: sadScore
             });
           });
         }
@@ -175,12 +219,21 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
           this._getTodayPulses().then((pulses: IPulseItems): Promise<SPHttpClientResponse> => {
 
             let score: number = 0;
+            var happyScore = 0;
+            var mehScore = 0;
+            var sadScore = 0;
+
             pulses.value.forEach((pulse: IPulseItem) => {
-              if (pulse.Title == 'Happy') {
+              if (pulse.PulseFeeling == 'Happy') {
                 score += 1;
+                happyScore += 1;
               }
-              else if (pulse.Title == 'Meh') {
+              else if (pulse.PulseFeeling == 'Meh') {
                 score += 0.5;
+                mehScore += 1;
+              }
+              else {
+                sadScore += 1;
               }
             });
             let tempPercentage: number = 0;
@@ -196,7 +249,10 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               showPulses: false,
               showLoading: false,
               showTemperature: true,
-              temperature: displayPercentage
+              temperature: displayPercentage,
+              happyCount: happyScore,
+              mehCount: mehScore,
+              sadCount: sadScore
             });
             return null;
           });

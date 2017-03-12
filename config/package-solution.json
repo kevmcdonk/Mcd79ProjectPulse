@@ -2,12 +2,12 @@
   "solution": {
     "name": "project-pulse-client-side-solution",
     "id": "4b67e6ad-4417-4144-b812-c6033fe31659",
-    "version": "1.0.0.6",
+    "version": "1.0.0.7",
     "features": [{
       "title": "project-pulse-client-side-solution",
       "description": "Solution for capturing the pulse of a project on your site",
       "id": "9520b41d-cf13-4bae-884b-5d2a3bea160f",
-      "version": "1.0.0.6",
+      "version": "1.0.0.7",
       "assets": {        
         "elementManifests": [
           "elements.xml"

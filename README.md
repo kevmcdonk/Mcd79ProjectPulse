@@ -35,7 +35,7 @@ To configure for your own site, you will need to update the CDNBasePath in write
 
 Future roadmap includes:
 
-* Show number of different pulses in wide view but not in narrow/mobile view
+* Ensure that last submitted value shows immediately
 * Allow people to change their pulse once submitted
 * Create a weekly/monthly view webpart
 * Deal with larger sets of data (the good old 5000 limit fun and games)
@@ -46,4 +46,7 @@ Future roadmap includes:
 
 * Added check to see whether user has already submitted today. Uses local storage to retain last submitted date.
 
+## 1.0.0.7
+
+* SHowing numbe of different pulses in wide view but not in narrow/mobile view.
 

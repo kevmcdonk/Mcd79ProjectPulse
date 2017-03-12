@@ -178,7 +178,10 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                showPulses: true,
 	                showLoading: false,
 	                showTemperature: false,
-	                temperature: 0
+	                temperature: 0,
+	                happyCount: 0,
+	                mehCount: 0,
+	                sadCount: 0
 	            };
 	        }
 	        else {
@@ -188,7 +191,10 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                showPulses: false,
 	                showLoading: true,
 	                showTemperature: false,
-	                temperature: 0
+	                temperature: 0,
+	                happyCount: 0,
+	                mehCount: 0,
+	                sadCount: 0
 	            };
 	            _this.showTemperature();
 	        }
@@ -225,10 +231,23 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                        React.createElement("div", { className: "ms-Grid-col ms-u-lg12" },
 	                            React.createElement("span", { className: "ms-font-xl ms-fontColor-white" }, "Everyone else is feeling")),
 	                        React.createElement("div", { className: "ms-Grid-row ms-bgColor-themeDark ms-fontColor-white " + ProjectPulse_module_scss_1.default.thermometerContainer },
-	                            React.createElement("div", { className: "ms-Grid-col ms-u-lg4 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
+	                            React.createElement("div", { className: "ms-Grid-col ms-u-lg6 ms-u-sm6 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
 	                                React.createElement("span", { className: ProjectPulse_module_scss_1.default.thermometer, style: this.tempStyle },
 	                                    this.state.temperature,
-	                                    "%")))))));
+	                                    "%")),
+	                            React.createElement("div", { className: "ms-Grid-col ms-u-sm6 ms-u-hiddenXlDown ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
+	                                React.createElement("div", null,
+	                                    React.createElement("i", { className: "ms-Icon ms-Icon--Emoji2" }),
+	                                    " ",
+	                                    this.state.happyCount),
+	                                React.createElement("div", null,
+	                                    React.createElement("i", { className: "ms-Icon ms-Icon--EmojiNeutral" }),
+	                                    " ",
+	                                    this.state.mehCount),
+	                                React.createElement("div", null,
+	                                    React.createElement("i", { className: "ms-Icon ms-Icon--Sad" }),
+	                                    " ",
+	                                    this.state.sadCount)))))));
 	    };
 	    ProjectPulse.prototype.createItem = function (feeling) {
 	        var _this = this;
@@ -238,15 +257,32 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	            showPulses: false,
 	            showLoading: true,
 	            showTemperature: false,
-	            temperature: 0
+	            temperature: 0,
+	            happyCount: 0,
+	            mehCount: 0,
+	            sadCount: 0
 	        });
 	        this.getListItemEntityTypeName()
 	            .then(function (listItemEntityTypeName) {
-	            var dateToSet = new Date();
-	            localStorage.setItem(_this.localStorageKeyLastDate, dateToSet.toString());
-	            _this.showTemperature();
-	            return null;
+	            var body = JSON.stringify({
+	                '__metadata': {
+	                    'type': listItemEntityTypeName
+	                },
+	                'PulseFeeling': feeling
+	            });
+	            return _this.props.spHttpClient.post(_this.props.siteUrl + "/_api/web/lists/getbytitle('" + _this.props.listName + "')/items", sp_http_1.SPHttpClient.configurations.v1, {
+	                headers: {
+	                    'Accept': 'application/json;odata=nometadata',
+	                    'Content-type': 'application/json;odata=verbose',
+	                    'odata-version': ''
+	                },
+	                body: body
+	            });
 	        });
+	        var dateToSet = new Date();
+	        localStorage.setItem(this.localStorageKeyLastDate, dateToSet.toString());
+	        this.showTemperature();
+	        return null;
 	    };
 	    ProjectPulse.prototype.showTemperature = function () {
 	        var _this = this;
@@ -254,13 +290,21 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	            MockHttpClient_1.default.getMockListData().then(function (response) {
 	                //this._renderList(response.value);
 	                var score = 0;
+	                var happyScore = 0;
+	                var mehScore = 0;
+	                var sadScore = 0;
 	                for (var _i = 0, response_1 = response; _i < response_1.length; _i++) {
 	                    var pulse = response_1[_i];
-	                    if (pulse.Title == 'Happy') {
+	                    if (pulse.PulseFeeling == 'Happy') {
 	                        score += 1;
+	                        happyScore += 1;
 	                    }
-	                    else if (pulse.Title == 'Meh') {
+	                    else if (pulse.PulseFeeling == 'Meh') {
 	                        score += 0.5;
+	                        mehScore += 1;
+	                    }
+	                    else if (pulse.PulseFeeling == 'Sad') {
+	                        sadScore += 1;
 	                    }
 	                }
 	                var tempPercentage = Number((100 - ((score / response.length) * 100)).toFixed(2));
@@ -273,7 +317,10 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                    showPulses: false,
 	                    showLoading: false,
 	                    showTemperature: true,
-	                    temperature: Number(((score / response.length) * 100).toFixed(2))
+	                    temperature: Number(((score / response.length) * 100).toFixed(2)),
+	                    happyCount: happyScore,
+	                    mehCount: mehScore,
+	                    sadCount: sadScore
 	                });
 	            });
 	        }
@@ -281,12 +328,20 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	            sp_core_library_1.Environment.type == sp_core_library_1.EnvironmentType.ClassicSharePoint) {
 	            this._getTodayPulses().then(function (pulses) {
 	                var score = 0;
+	                var happyScore = 0;
+	                var mehScore = 0;
+	                var sadScore = 0;
 	                pulses.value.forEach(function (pulse) {
-	                    if (pulse.Title == 'Happy') {
+	                    if (pulse.PulseFeeling == 'Happy') {
 	                        score += 1;
+	                        happyScore += 1;
 	                    }
-	                    else if (pulse.Title == 'Meh') {
+	                    else if (pulse.PulseFeeling == 'Meh') {
 	                        score += 0.5;
+	                        mehScore += 1;
+	                    }
+	                    else {
+	                        sadScore += 1;
 	                    }
 	                });
 	                var tempPercentage = 0;
@@ -301,7 +356,10 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                    showPulses: false,
 	                    showLoading: false,
 	                    showTemperature: true,
-	                    temperature: displayPercentage
+	                    temperature: displayPercentage,
+	                    happyCount: happyScore,
+	                    mehCount: mehScore,
+	                    sadCount: sadScore
 	                });
 	                return null;
 	            });
@@ -361,18 +419,18 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	/* tslint:disable */
 	__webpack_require__(8);
 	var styles = {
-	    helloWorld: 'helloWorld_02ac575a',
-	    container: 'container_02ac575a',
-	    row: 'row_02ac575a',
-	    listItem: 'listItem_02ac575a',
-	    feelingBlock: 'feelingBlock_02ac575a',
-	    feelingIcon: 'feelingIcon_02ac575a',
-	    pulseBox: 'pulseBox_02ac575a',
-	    pulseBoxContent: 'pulseBoxContent_02ac575a',
-	    thermometerContainer: 'thermometerContainer_02ac575a',
-	    thermometer: 'thermometer_02ac575a',
-	    button: 'button_02ac575a',
-	    label: 'label_02ac575a',
+	    helloWorld: 'helloWorld_3d519058',
+	    container: 'container_3d519058',
+	    row: 'row_3d519058',
+	    listItem: 'listItem_3d519058',
+	    feelingBlock: 'feelingBlock_3d519058',
+	    feelingIcon: 'feelingIcon_3d519058',
+	    pulseBox: 'pulseBox_3d519058',
+	    pulseBoxContent: 'pulseBoxContent_3d519058',
+	    thermometerContainer: 'thermometerContainer_3d519058',
+	    thermometer: 'thermometer_3d519058',
+	    button: 'button_3d519058',
+	    label: 'label_3d519058',
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = styles;
@@ -403,7 +461,7 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	
 	
 	// module
-	exports.push([module.id, ".helloWorld_02ac575a .container_02ac575a{max-width:700px;margin:0 auto;box-shadow:0 2px 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_02ac575a .row_02ac575a{padding:20px}.helloWorld_02ac575a .listItem_02ac575a{max-width:715px;margin:5px auto 5px auto;box-shadow:0 0 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_02ac575a .feelingBlock_02ac575a{padding-right:10px}.helloWorld_02ac575a .feelingIcon_02ac575a{padding:20px;text-align:center}.helloWorld_02ac575a .pulseBox_02ac575a{height:150px}.helloWorld_02ac575a .pulseBoxContent_02ac575a{font-size:60px;text-align:center;cursor:pointer;vertical-align:middle}.helloWorld_02ac575a .thermometerContainer_02ac575a{height:250px}.helloWorld_02ac575a .thermometer_02ac575a{margin:50% 0 0 50%;left:-15px;top:-100px;width:22px;height:150px;display:block;text-indent:36px;background:-webkit-linear-gradient(top,#fff 0,#fff 50%,#db3f02 50%,#db3f02 100%);border-radius:22px 22px 0 0;border:5px solid #4a1c03;border-bottom:none;position:absolute}.helloWorld_02ac575a .thermometer_02ac575a:before{content:' ';width:44px;height:44px;display:block;position:absolute;top:142px;left:-16px;background:#db3f02;border-radius:44px;border:5px solid #4a1c03}.helloWorld_02ac575a .thermometer_02ac575a:after{content:' ';width:22px;height:10px;display:block;position:absolute;top:140px;background:#db3f02}.helloWorld_02ac575a .button_02ac575a{text-decoration:none;height:32px;min-width:80px;background-color:#0078d7;border-color:#0078d7;color:#fff;outline:transparent;position:relative;font-family:\"Segoe UI WestEuropean\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;font-weight:400;border-width:0;text-align:center;cursor:pointer;display:inline-block;padding:0 16px}.helloWorld_02ac575a .button_02ac575a .label_02ac575a{font-weight:600;font-size:14px;height:32px;line-height:32px;margin:0 4px;vertical-align:top;display:inline-block}", ""]);
+	exports.push([module.id, ".helloWorld_3d519058 .container_3d519058{max-width:700px;margin:0 auto;box-shadow:0 2px 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_3d519058 .row_3d519058{padding:20px}.helloWorld_3d519058 .listItem_3d519058{max-width:715px;margin:5px auto 5px auto;box-shadow:0 0 4px 0 rgba(0,0,0,.2),0 25px 50px 0 rgba(0,0,0,.1)}.helloWorld_3d519058 .feelingBlock_3d519058{padding-right:10px}.helloWorld_3d519058 .feelingIcon_3d519058{padding:20px;text-align:center}.helloWorld_3d519058 .pulseBox_3d519058{height:150px}.helloWorld_3d519058 .pulseBoxContent_3d519058{font-size:60px;text-align:center;cursor:pointer;vertical-align:middle}.helloWorld_3d519058 .thermometerContainer_3d519058{height:250px}.helloWorld_3d519058 .thermometer_3d519058{margin:50% 0 0 50%;left:-15px;top:-150px;width:22px;height:150px;display:block;text-indent:36px;background:-webkit-linear-gradient(top,#fff 0,#fff 50%,#db3f02 50%,#db3f02 100%);border-radius:22px 22px 0 0;border:5px solid #4a1c03;border-bottom:none;position:absolute}.helloWorld_3d519058 .thermometer_3d519058:before{content:' ';width:44px;height:44px;display:block;position:absolute;top:142px;left:-16px;background:#db3f02;border-radius:44px;border:5px solid #4a1c03}.helloWorld_3d519058 .thermometer_3d519058:after{content:' ';width:22px;height:10px;display:block;position:absolute;top:140px;background:#db3f02}.helloWorld_3d519058 .button_3d519058{text-decoration:none;height:32px;min-width:80px;background-color:#0078d7;border-color:#0078d7;color:#fff;outline:transparent;position:relative;font-family:\"Segoe UI WestEuropean\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;font-weight:400;border-width:0;text-align:center;cursor:pointer;display:inline-block;padding:0 16px}.helloWorld_3d519058 .button_3d519058 .label_3d519058{font-weight:600;font-size:14px;height:32px;line-height:32px;margin:0 4px;vertical-align:top;display:inline-block}", ""]);
 	
 	// exports
 
@@ -726,9 +784,9 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	    };
 	    return MockHttpClient;
 	}());
-	MockHttpClient._items = [{ Title: 'Meh', Id: 1 },
-	    { Title: 'Meh', Id: 2 },
-	    { Title: 'Sad', Id: 3 }];
+	MockHttpClient._items = [{ PulseFeeling: 'Meh', Id: 1 },
+	    { PulseFeeling: 'Meh', Id: 2 },
+	    { PulseFeeling: 'Sad', Id: 3 }];
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = MockHttpClient;
 

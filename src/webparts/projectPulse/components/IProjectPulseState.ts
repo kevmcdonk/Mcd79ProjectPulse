@@ -7,4 +7,7 @@ export interface IProjectPulseState {
   showLoading: boolean;
   showTemperature: boolean;
   temperature: number;
+  happyCount: number;
+  mehCount: number;
+  sadCount: number;
 }
