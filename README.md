@@ -1,6 +1,8 @@
-## project-pulse
+## Mcd79 project-pulse
 
-This is where you include your WebPart documentation.
+Set up using the standard @microsoft/sharepoint yeoman generator and Office UI Fabric React, this is a fairly simple webpart that demonstrates writing a list to SharePoint as part of the deployed add-in which is then read and written to.
+
+The webpart slots on a page for any site and allows users of the site to say how they are feeling about the project today. This then shows them the temperature of the project for that day.
 
 ### Building the code
 
@@ -25,17 +27,20 @@ gulp serve - TODO
 gulp bundle - TODO
 gulp package-solution - TODO
 
+#### Set up items
+
+To configure for your own site, you will need to update the CDNBasePath in write-manifests.json to your own CDN path. My own project is set to another SharePoint site but I will be migrating it to the preview of the Office 365 CDN - https://dev.office.com/blogs/office-365-public-cdn-developer-preview-release.
 
 ### TODO
 
-Currently using the path below but should change to a CDN:
+Future roadmap includes:
 
-https://mcdonnell.sharepoint.com/CDN/SiteAssets/mcd79spfx/projectpulse/
+* Show number of different pulses in wide view but not in narrow/mobile view
+* Ensure that people can only submit one pulse per day
+* Allow people to change their pulse once submitted
+* Create a weekly/monthly view webpart
+* Deal with larger sets of data (the good old 5000 limit fun and games)
 
-CDN path:
 
-https://publiccdn.sharepointonline.com/mcdonnell.sharepoint.com/17010057ba9cb512378a36c5a527037405aae98495ac81c4c4b93d481ef919a03e6d02e3/projectpulse/
-
-Could be Github published for other use?
 
 
