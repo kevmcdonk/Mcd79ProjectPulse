@@ -155,14 +155,43 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	        var _this = _super.call(this, props) || this;
 	        _this.listItemEntityTypeName = undefined;
 	        _this.tempStyle = undefined;
-	        _this.state = {
-	            status: 'getPulse',
-	            items: [],
-	            showPulses: true,
-	            showLoading: false,
-	            showTemperature: false,
-	            temperature: 0
-	        };
+	        _this.localStorageKeyLastDate = 'mcd79ProjectPulseLastDate';
+	        var lastPulseTimeText = localStorage.getItem(_this.localStorageKeyLastDate);
+	        var showPulses = false;
+	        if (lastPulseTimeText == null) {
+	            showPulses = true;
+	        }
+	        else {
+	            var currentDate = new Date();
+	            var lastPulseTime = new Date(lastPulseTimeText);
+	            if (lastPulseTime.getDate() != currentDate.getDate()
+	                || lastPulseTime.getMonth() != currentDate.getMonth()
+	                || lastPulseTime.getFullYear() != currentDate.getFullYear()) {
+	                showPulses = true;
+	            }
+	        }
+	        //milliseconds in a day86400000
+	        if (showPulses) {
+	            _this.state = {
+	                status: 'getPulse',
+	                items: [],
+	                showPulses: true,
+	                showLoading: false,
+	                showTemperature: false,
+	                temperature: 0
+	            };
+	        }
+	        else {
+	            _this.state = {
+	                status: 'getPulse',
+	                items: [],
+	                showPulses: false,
+	                showLoading: true,
+	                showTemperature: false,
+	                temperature: 0
+	            };
+	            _this.showTemperature();
+	        }
 	        //backgroundImage: 'url(' + imgUrl + ')',
 	        _this.tempStyle = {
 	            background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + _this.state.temperature + '%, #db3f02 ' + _this.state.temperature + '%, #db3f02 100%)'
@@ -187,7 +216,7 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                this.state.showLoading &&
 	                    React.createElement("div", { className: "ms-Grid-row ms-bgColor-themeDark ms-fontColor-white " + ProjectPulse_module_scss_1.default.row },
 	                        React.createElement("div", { className: "ms-Grid-col ms-u-lg12" },
-	                            React.createElement("span", { className: "ms-font-xl ms-fontColor-white" }, "Saving...")),
+	                            React.createElement("span", { className: "ms-font-xl ms-fontColor-white" }, "Loading...")),
 	                        React.createElement("div", { className: "ms-Grid-row ms-bgColor-themeDark ms-fontColor-white" },
 	                            React.createElement("div", { className: "ms-Grid-col ms-u-lg4 ms-font-su " + ProjectPulse_module_scss_1.default.feelingIcon },
 	                                React.createElement("i", { className: "ms-Icon ms-Icon--Sync" })))),
@@ -213,70 +242,70 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	        });
 	        this.getListItemEntityTypeName()
 	            .then(function (listItemEntityTypeName) {
-	            var body = JSON.stringify({
-	                '__metadata': {
-	                    'type': listItemEntityTypeName
-	                },
-	                'Title': feeling
-	            });
-	            if (sp_core_library_1.Environment.type === sp_core_library_1.EnvironmentType.Local) {
-	                MockHttpClient_1.default.getMockListData().then(function (response) {
-	                    //this._renderList(response.value);
-	                    var score = 0;
-	                    for (var _i = 0, response_1 = response; _i < response_1.length; _i++) {
-	                        var pulse = response_1[_i];
-	                        if (pulse.Title == 'Happy') {
-	                            score += 1;
-	                        }
-	                        else if (pulse.Title == 'Meh') {
-	                            score += 0.5;
-	                        }
+	            var dateToSet = new Date();
+	            localStorage.setItem(_this.localStorageKeyLastDate, dateToSet.toString());
+	            _this.showTemperature();
+	            return null;
+	        });
+	    };
+	    ProjectPulse.prototype.showTemperature = function () {
+	        var _this = this;
+	        if (sp_core_library_1.Environment.type === sp_core_library_1.EnvironmentType.Local) {
+	            MockHttpClient_1.default.getMockListData().then(function (response) {
+	                //this._renderList(response.value);
+	                var score = 0;
+	                for (var _i = 0, response_1 = response; _i < response_1.length; _i++) {
+	                    var pulse = response_1[_i];
+	                    if (pulse.Title == 'Happy') {
+	                        score += 1;
 	                    }
-	                    var tempPercentage = Number((100 - ((score / response.length) * 100)).toFixed(2));
-	                    _this.tempStyle = {
-	                        background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + tempPercentage + '%, #db3f02 ' + tempPercentage + '%, #db3f02 100%)'
-	                    };
-	                    _this.setState({
-	                        status: 'showTemperature',
-	                        items: [],
-	                        showPulses: false,
-	                        showLoading: false,
-	                        showTemperature: true,
-	                        temperature: Number(((score / response.length) * 100).toFixed(2))
-	                    });
+	                    else if (pulse.Title == 'Meh') {
+	                        score += 0.5;
+	                    }
+	                }
+	                var tempPercentage = Number((100 - ((score / response.length) * 100)).toFixed(2));
+	                _this.tempStyle = {
+	                    background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + tempPercentage + '%, #db3f02 ' + tempPercentage + '%, #db3f02 100%)'
+	                };
+	                _this.setState({
+	                    status: 'showTemperature',
+	                    items: [],
+	                    showPulses: false,
+	                    showLoading: false,
+	                    showTemperature: true,
+	                    temperature: Number(((score / response.length) * 100).toFixed(2))
+	                });
+	            });
+	        }
+	        else if (sp_core_library_1.Environment.type == sp_core_library_1.EnvironmentType.SharePoint ||
+	            sp_core_library_1.Environment.type == sp_core_library_1.EnvironmentType.ClassicSharePoint) {
+	            this._getTodayPulses().then(function (pulses) {
+	                var score = 0;
+	                pulses.value.forEach(function (pulse) {
+	                    if (pulse.Title == 'Happy') {
+	                        score += 1;
+	                    }
+	                    else if (pulse.Title == 'Meh') {
+	                        score += 0.5;
+	                    }
+	                });
+	                var tempPercentage = 0;
+	                tempPercentage = Number((100 - ((score / pulses.value.length) * 100)).toFixed(2));
+	                var displayPercentage = Number(((score / pulses.value.length) * 100).toFixed(0));
+	                _this.tempStyle = {
+	                    background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + tempPercentage + '%, #db3f02 ' + tempPercentage + '%, #db3f02 100%)'
+	                };
+	                _this.setState({
+	                    status: 'showTemperature',
+	                    items: [],
+	                    showPulses: false,
+	                    showLoading: false,
+	                    showTemperature: true,
+	                    temperature: displayPercentage
 	                });
 	                return null;
-	            }
-	            else if (sp_core_library_1.Environment.type == sp_core_library_1.EnvironmentType.SharePoint ||
-	                sp_core_library_1.Environment.type == sp_core_library_1.EnvironmentType.ClassicSharePoint) {
-	                _this._getTodayPulses().then(function (pulses) {
-	                    var score = 0;
-	                    pulses.value.forEach(function (pulse) {
-	                        if (pulse.Title == 'Happy') {
-	                            score += 1;
-	                        }
-	                        else if (pulse.Title == 'Meh') {
-	                            score += 0.5;
-	                        }
-	                    });
-	                    var tempPercentage = 0;
-	                    tempPercentage = Number((100 - ((score / pulses.value.length) * 100)).toFixed(2));
-	                    var displayPercentage = Number(((score / pulses.value.length) * 100).toFixed(0));
-	                    _this.tempStyle = {
-	                        background: '-webkit-linear-gradient(top, #fff 0%, #fff ' + tempPercentage + '%, #db3f02 ' + tempPercentage + '%, #db3f02 100%)'
-	                    };
-	                    _this.setState({
-	                        status: 'showTemperature',
-	                        items: [],
-	                        showPulses: false,
-	                        showLoading: false,
-	                        showTemperature: true,
-	                        temperature: displayPercentage
-	                    });
-	                    return null;
-	                });
-	            }
-	        });
+	            });
+	        }
 	    };
 	    ProjectPulse.prototype._getTodayPulses = function () {
 	        return this.props.spHttpClient.get(this.props.siteUrl + "/_api/web/lists/getbytitle('" + this.props.listName + "')/items", sp_http_1.SPHttpClient.configurations.v1)

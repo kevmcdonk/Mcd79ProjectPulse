@@ -15,18 +15,49 @@ import MockHttpClient from '../MockHttpClient';
 export default class ProjectPulse extends React.Component<IProjectPulseProps, IProjectPulseState> {
   private listItemEntityTypeName: string = undefined;
   private tempStyle: any = undefined;
+  private localStorageKeyLastDate: string = 'mcd79ProjectPulseLastDate';
 
   constructor(props: IProjectPulseProps) {
     super(props);
 
-    this.state = {
-      status: 'getPulse',
-      items: [],
-      showPulses: true,
-      showLoading: false,
-      showTemperature: false,
-      temperature: 0
-    };
+    var lastPulseTimeText = localStorage.getItem(this.localStorageKeyLastDate);
+    let showPulses:boolean = false;
+    if (lastPulseTimeText == null) {
+      showPulses = true;
+    }
+    else {
+      var currentDate = new Date();
+      var lastPulseTime = new Date(lastPulseTimeText);
+      if (lastPulseTime.getDate() != currentDate.getDate()
+       || lastPulseTime.getMonth() != currentDate.getMonth()
+       || lastPulseTime.getFullYear() != currentDate.getFullYear()) {
+         showPulses = true;
+       }
+    }
+    //milliseconds in a day86400000
+    if (showPulses)
+    {
+        this.state = {
+        status: 'getPulse',
+        items: [],
+        showPulses: true,
+        showLoading: false,
+        showTemperature: false,
+        temperature: 0
+      };
+    }
+    else {
+      
+      this.state = {
+        status: 'getPulse',
+        items: [],
+        showPulses: false,
+        showLoading: true,
+        showTemperature: false,
+        temperature: 0
+      };
+      this.showTemperature();
+    }
 
     //backgroundImage: 'url(' + imgUrl + ')',
     this.tempStyle = {
@@ -62,7 +93,7 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
 
             <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.row}`}>
               <div className="ms-Grid-col ms-u-lg12">
-                <span className="ms-font-xl ms-fontColor-white">Saving...</span>
+                <span className="ms-font-xl ms-fontColor-white">Loading...</span>
               </div>
               <div className="ms-Grid-row ms-bgColor-themeDark ms-fontColor-white">
                 <div className={`ms-Grid-col ms-u-lg4 ms-font-su ${styles.feelingIcon}`}>
@@ -102,16 +133,15 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
 
     this.getListItemEntityTypeName()
       .then((listItemEntityTypeName: string): Promise<SPHttpClientResponse> => {
+        var dateToSet = new Date();
+        localStorage.setItem(this.localStorageKeyLastDate, dateToSet.toString());
+        this.showTemperature();
+        return null;
+      });
+  }
 
-
-        const body: string = JSON.stringify({
-          '__metadata': {
-            'type': listItemEntityTypeName
-          },
-          'Title': feeling
-        });
-        
-        if (Environment.type === EnvironmentType.Local) {
+  private showTemperature() {
+    if (Environment.type === EnvironmentType.Local) {
           MockHttpClient.getMockListData().then((response) => {
             //this._renderList(response.value);
             var score = 0;
@@ -138,7 +168,6 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               temperature: Number(((score / response.length) * 100).toFixed(2))
             });
           });
-          return null;
         }
         else if (Environment.type == EnvironmentType.SharePoint ||
           Environment.type == EnvironmentType.ClassicSharePoint) {
@@ -172,7 +201,7 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
             return null;
           });
         }
-      });
+
   }
 
   private _getTodayPulses(): Promise<IPulseItems> {
