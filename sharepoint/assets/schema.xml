@@ -5,10 +5,17 @@
     <ContentTypes>
       
       
-    <ContentType ID="0x01007B55396B820449D2A3347A874C9D0944" Name="Pulse" Group="Custom Content Types" Description="My Content Type" Inherits="TRUE" Version="0"><FieldRefs><FieldRef ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" DisplayName="Pulse Feeling" Required="TRUE" Name="PulseFeeling" /><FieldRef ID="{80fa518c-d04d-4477-8532-017c12106b50}" DisplayName="Pulse Thoughts" Required="FALSE" Name="PulseThoughts" /></FieldRefs></ContentType></ContentTypes>
+    <ContentType ID="0x01007B55396B820449D2A3347A874C9D0944" Name="Pulse" Group="Custom Content Types" Description="My Content Type" Inherits="TRUE" Version="0">
+    <FieldRefs>
+    <FieldRef ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" DisplayName="Pulse Feeling" Required="TRUE" Name="PulseFeeling" />
+    <FieldRef ID="{80fa518c-d04d-4477-8532-017c12106b50}" DisplayName="Pulse Thoughts" Required="FALSE" Name="PulseThoughts" />
+    </FieldRefs>
+    </ContentType>
+    </ContentTypes>
     <Fields>
       
-    <Field ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" Name="PulseFeeling" DisplayName="Pulse Feeling" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field><Field ID="{80fa518c-d04d-4477-8532-017c12106b50}" Name="PulseThoughts" DisplayName="Pulse Thoughts" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field></Fields>
+    <Field ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" Name="PulseFeeling" DisplayName="Pulse Feeling" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field>
+    <Field ID="{80fa518c-d04d-4477-8532-017c12106b50}" Name="PulseThoughts" DisplayName="Pulse Thoughts" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field></Fields>
     <Views>
       
       
