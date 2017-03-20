@@ -2,12 +2,12 @@
   "solution": {
     "name": "Mcd 79 Project Pulse App",
     "id": "4b67e6ad-4417-4144-b812-c6033fe31659",
-    "version": "1.0.0.8",
+    "version": "1.0.0.23",
     "features": [{
       "title": "Mcd 79 Project Pulse App",
       "description": "Solution for capturing the pulse of a project on your site",
       "id": "9520b41d-cf13-4bae-884b-5d2a3bea160f",
-      "version": "1.0.0.8",
+      "version": "1.0.0.23",
       "assets": {        
         "elementManifests": [
           "elements.xml"

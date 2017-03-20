@@ -46,7 +46,8 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
         temperature: 0,
         happyCount: 0,
         mehCount: 0,
-        sadCount:0
+        sadCount:0,
+        pulseText: ''
       };
     }
     else {
@@ -60,7 +61,8 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
         temperature: 0,
         happyCount: 0,
         mehCount: 0,
-        sadCount:0
+        sadCount:0,
+        pulseText: ''
       };
       this.showTemperature();
     }
@@ -142,7 +144,8 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
       temperature: 0,
         happyCount: 0,
         mehCount: 0,
-        sadCount:0
+        sadCount:0,
+        pulseText: ''
     });
 
     this.getListItemEntityTypeName()
@@ -151,7 +154,7 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
            '__metadata': {
              'type': listItemEntityTypeName
            },
-           'PulseFeeling': feeling
+           'Title': feeling
          });
 
 
@@ -181,17 +184,19 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
             var happyScore = 0;
             var mehScore = 0;
             var sadScore = 0;
+            var pulseText = '';
             
             for (let pulse of response) {
-              if (pulse.PulseFeeling == 'Happy') {
+              //pulseText += '*' + pulse.Title;
+              if (pulse.Title == 'Happy') {
                 score += 1;
                 happyScore += 1;
               }
-              else if (pulse.PulseFeeling == 'Meh') {
+              else if (pulse.Title == 'Meh') {
                 score += 0.5;
                 mehScore += 1;
               }
-              else if (pulse.PulseFeeling == 'Sad') {
+              else if (pulse.Title == 'Sad') {
                 sadScore += 1;
               }
             }
@@ -209,7 +214,8 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               temperature: Number(((score / response.length) * 100).toFixed(2)),
               happyCount: happyScore,
               mehCount: mehScore,
-              sadCount: sadScore
+              sadCount: sadScore,
+              pulseText: pulseText
             });
           });
         }
@@ -222,13 +228,15 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
             var happyScore = 0;
             var mehScore = 0;
             var sadScore = 0;
+            var pulseText = '';
 
             pulses.value.forEach((pulse: IPulseItem) => {
-              if (pulse.PulseFeeling == 'Happy') {
+              //pulseText += '*' + pulse.Title;
+              if (pulse.Title == 'Happy') {
                 score += 1;
                 happyScore += 1;
               }
-              else if (pulse.PulseFeeling == 'Meh') {
+              else if (pulse.Title == 'Meh') {
                 score += 0.5;
                 mehScore += 1;
               }
@@ -252,7 +260,8 @@ export default class ProjectPulse extends React.Component<IProjectPulseProps, IP
               temperature: displayPercentage,
               happyCount: happyScore,
               mehCount: mehScore,
-              sadCount: sadScore
+              sadCount: sadScore,
+              pulseText: pulseText
             });
             return null;
           });

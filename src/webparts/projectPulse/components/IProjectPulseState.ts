@@ -10,4 +10,5 @@ export interface IProjectPulseState {
   happyCount: number;
   mehCount: number;
   sadCount: number;
+  pulseText: string;
 }

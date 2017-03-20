@@ -1,6 +1,6 @@
 export interface IPulseItem {
-  Title?: string;
+  Title: string;
   Id: number;
-  PulseFeeling: string;
+  PulseFeeling?: string;
   PulseThoughts?: string;
 }

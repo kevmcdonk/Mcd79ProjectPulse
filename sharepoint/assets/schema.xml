@@ -1,59 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<List xmlns:ows="Microsoft SharePoint" Title="Pulses" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/Pulses" BaseType="0" xmlns="http://schemas.microsoft.com/sharepoint/" EnableContentTypes="TRUE">
+<List xmlns:ows="Microsoft SharePoint" Title="Basic List" EnableContentTypes="TRUE" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/Basic List" BaseType="0" xmlns="http://schemas.microsoft.com/sharepoint/">
   <MetaData>
-    <ContentTypes>
-      
-      
-    <ContentType ID="0x01007B55396B820449D2A3347A874C9D0944" Name="Pulse" Group="Custom Content Types" Description="My Content Type" Inherits="TRUE" Version="0">
-    <FieldRefs>
-    <FieldRef ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" DisplayName="Pulse Feeling" Required="TRUE" Name="PulseFeeling" />
-    <FieldRef ID="{80fa518c-d04d-4477-8532-017c12106b50}" DisplayName="Pulse Thoughts" Required="FALSE" Name="PulseThoughts" />
-    </FieldRefs>
-    </ContentType>
-    </ContentTypes>
+    <!--<ContentTypes>
+      <ContentTypeRef ID="0x01007B55396B820449D2A3347A874C9D0944" />
+    </ContentTypes>-->
     <Fields>
-      
-    <Field ID="{35b1e542-eee2-4ca7-92eb-5ae81aff4d60}" Name="PulseFeeling" DisplayName="Pulse Feeling" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field>
-    <Field ID="{80fa518c-d04d-4477-8532-017c12106b50}" Name="PulseThoughts" DisplayName="Pulse Thoughts" Type="Text" Required="FALSE" Group="Custom Site Columns"></Field></Fields>
-    <Views>
-      
-      
-    <View BaseViewID="0" Type="HTML" MobileView="TRUE" TabularView="FALSE">
-        <Toolbar Type="Standard" />
-        <XslLink Default="TRUE">main.xsl</XslLink>
-        <RowLimit Paged="TRUE">30</RowLimit>
-        <ViewFields>
-          
-        <FieldRef Name="LinkTitleNoMenu"></FieldRef></ViewFields>
-        <Query>
-          <OrderBy>
+      <!-- Rename the out of the box Title column -->
+      <Field ID="{82642EC8-EF9B-478F-ACF9-31F7D45FBC31}"
+            Type="Computed"
+            Name="LinkTitle"
+            DisplayName="Pulse Feeling" />
+      <Field ID="{BC91A437-52E7-49E1-8C4E-4698904B2B6D}"
+            Type="Computed"
+            Name="LinkTitleNoMenu"
+            DisplayName="Pulse Feeling" />
+      <Field ID="{FA564E0F-0C70-4AB9-B863-0177E6DDD247}"
+            Type="Text"
+            Name="Title"
+            DisplayName="Pulse Feeling" />
+      <Field ID="{89b96b86-bbe7-4723-a3d3-9c61ed6d158c}"
+            Type="Text"
+            Name="PulseThoughts"
+            DisplayName="Pulse Thoughts" />
             
-          <FieldRef Name="Modified" Ascending="FALSE"></FieldRef></OrderBy>
-        </Query>
-        <ParameterBindings>
-          <ParameterBinding Name="AddNewAnnouncement" Location="Resource(wss,addnewitem)" />
-          <ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" />
-          <ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(wss,noXinviewofY_ONET_HOME)" />
-        </ParameterBindings>
-      </View><View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="FALSE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/15/images/generic.png?rev=23" Url="AllItems.aspx">
-        <Toolbar Type="Standard" />
+    </Fields>
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouhttps://devofficecdn.azureedge.net/sharepointdocumentation/images/generic.png" Url="AllItems.aspx">
         <XslLink Default="TRUE">main.xsl</XslLink>
         <JSLink>clienttemplates.js</JSLink>
         <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
         <ViewFields>
-          
-        <FieldRef Name="LinkTitle"></FieldRef><FieldRef Name="PulseFeeling" /><FieldRef Name="PulseThoughts" /></ViewFields>
+          <FieldRef Name="LinkTitle"></FieldRef>
+          <FieldRef Name="Created"></FieldRef>
+        </ViewFields>
         <Query>
           <OrderBy>
-            
-          <FieldRef Name="ID"></FieldRef></OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
         </Query>
-        <ParameterBindings>
-          <ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" />
-          <ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(wss,noXinviewofY_DEFAULT)" />
-        </ParameterBindings>
-      </View><View BaseViewID="2" Name="f5d26fd9-6d27-4096-8a17-28c7d04f06a4" DisplayName="My pulses" Type="HTML" WebPartZoneID="Main" SetupPath="pages\viewpage.aspx" Url="My pulses.aspx" DefaultView="TRUE"><ViewFields><FieldRef Name="PulseFeeling" /><FieldRef Name="PulseThoughts" /><FieldRef Name="Created" /></ViewFields><Query /><Toolbar Type="Standard" /><XslLink Default="TRUE">main.xsl</XslLink><JSLink>clienttemplates.js</JSLink></View></Views>
+      </View>
+    </Views>
     <Forms>
       <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
       <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />

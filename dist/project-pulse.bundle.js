@@ -181,7 +181,8 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                temperature: 0,
 	                happyCount: 0,
 	                mehCount: 0,
-	                sadCount: 0
+	                sadCount: 0,
+	                pulseText: ''
 	            };
 	        }
 	        else {
@@ -194,7 +195,8 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                temperature: 0,
 	                happyCount: 0,
 	                mehCount: 0,
-	                sadCount: 0
+	                sadCount: 0,
+	                pulseText: ''
 	            };
 	            _this.showTemperature();
 	        }
@@ -260,7 +262,8 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	            temperature: 0,
 	            happyCount: 0,
 	            mehCount: 0,
-	            sadCount: 0
+	            sadCount: 0,
+	            pulseText: ''
 	        });
 	        this.getListItemEntityTypeName()
 	            .then(function (listItemEntityTypeName) {
@@ -268,7 +271,7 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                '__metadata': {
 	                    'type': listItemEntityTypeName
 	                },
-	                'PulseFeeling': feeling
+	                'Title': feeling
 	            });
 	            return _this.props.spHttpClient.post(_this.props.siteUrl + "/_api/web/lists/getbytitle('" + _this.props.listName + "')/items", sp_http_1.SPHttpClient.configurations.v1, {
 	                headers: {
@@ -293,17 +296,19 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                var happyScore = 0;
 	                var mehScore = 0;
 	                var sadScore = 0;
+	                var pulseText = '';
 	                for (var _i = 0, response_1 = response; _i < response_1.length; _i++) {
 	                    var pulse = response_1[_i];
-	                    if (pulse.PulseFeeling == 'Happy') {
+	                    //pulseText += '*' + pulse.Title;
+	                    if (pulse.Title == 'Happy') {
 	                        score += 1;
 	                        happyScore += 1;
 	                    }
-	                    else if (pulse.PulseFeeling == 'Meh') {
+	                    else if (pulse.Title == 'Meh') {
 	                        score += 0.5;
 	                        mehScore += 1;
 	                    }
-	                    else if (pulse.PulseFeeling == 'Sad') {
+	                    else if (pulse.Title == 'Sad') {
 	                        sadScore += 1;
 	                    }
 	                }
@@ -320,7 +325,8 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                    temperature: Number(((score / response.length) * 100).toFixed(2)),
 	                    happyCount: happyScore,
 	                    mehCount: mehScore,
-	                    sadCount: sadScore
+	                    sadCount: sadScore,
+	                    pulseText: pulseText
 	                });
 	            });
 	        }
@@ -331,12 +337,14 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                var happyScore = 0;
 	                var mehScore = 0;
 	                var sadScore = 0;
+	                var pulseText = '';
 	                pulses.value.forEach(function (pulse) {
-	                    if (pulse.PulseFeeling == 'Happy') {
+	                    //pulseText += '*' + pulse.Title;
+	                    if (pulse.Title == 'Happy') {
 	                        score += 1;
 	                        happyScore += 1;
 	                    }
-	                    else if (pulse.PulseFeeling == 'Meh') {
+	                    else if (pulse.Title == 'Meh') {
 	                        score += 0.5;
 	                        mehScore += 1;
 	                    }
@@ -359,7 +367,8 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	                    temperature: displayPercentage,
 	                    happyCount: happyScore,
 	                    mehCount: mehScore,
-	                    sadCount: sadScore
+	                    sadCount: sadScore,
+	                    pulseText: pulseText
 	                });
 	                return null;
 	            });
@@ -784,9 +793,9 @@ define("4efaba52-a723-4514-97ba-4019de136aec_0.0.1", ["react","react-dom","@micr
 	    };
 	    return MockHttpClient;
 	}());
-	MockHttpClient._items = [{ PulseFeeling: 'Meh', Id: 1 },
-	    { PulseFeeling: 'Meh', Id: 2 },
-	    { PulseFeeling: 'Sad', Id: 3 }];
+	MockHttpClient._items = [{ Title: 'Meh', Id: 1 },
+	    { Title: 'Meh', Id: 2 },
+	    { Title: 'Sad', Id: 3 }];
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = MockHttpClient;
 

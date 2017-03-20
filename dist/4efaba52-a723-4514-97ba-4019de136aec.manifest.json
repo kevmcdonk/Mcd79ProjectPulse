@@ -25,7 +25,7 @@
   "loaderConfig": {
     "entryModuleId": "project-pulse.bundle",
     "internalModuleBaseUrls": [
-      "https://localhost:4321/"
+      "https://mcdonnell.sharepoint.com/CDN/SiteAssets/mcd79spfx/projectpulse/"
     ],
     "scriptResources": {
       "project-pulse.bundle": {
